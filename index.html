@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Falling Dots with Cursor Connection</title>
+  <title>Falling Dots with Lines</title>
   <style>
     body {
       margin: 0;
@@ -19,14 +19,22 @@
       background-color: rgba(255, 255, 255, 0.7);
       border-radius: 50%;
       pointer-events: none;
-      transition: transform 0.1s ease;
     }
 
     .trail-line {
       position: absolute;
       width: 2px;
-      background-color: rgba(255, 255, 255, 0.5);
+      background-color: rgba(255, 255, 255, 0.2); /* Faint lines */
       pointer-events: none;
+    }
+
+    @keyframes falling {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(100vh); /* Fall to the bottom of the screen */
+      }
     }
   </style>
 </head>
@@ -54,14 +62,10 @@
       mouseY = e.clientY;
     });
 
-    // Function to draw a line from dot to the cursor
-    function createLine(dot) {
+    // Function to draw a line from dot to dot or to cursor
+    function createLine(x1, y1, x2, y2) {
       const line = document.createElement('div');
       line.classList.add('trail-line');
-      const x1 = dot.offsetLeft + 4;
-      const y1 = dot.offsetTop + 4;
-      const x2 = mouseX;
-      const y2 = mouseY;
       const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
       const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
       line.style.width = `${length}px`;
@@ -72,16 +76,21 @@
       lines.push(line);
     }
 
-    // Create falling dots and lines to connect them to the cursor
+    // Create falling dots and lines to connect them to the cursor and each other
     function animateDots() {
       // Create new dots at regular intervals
       if (Math.random() < 0.05) { // Controls the number of dots falling
         createDot();
       }
 
-      // Draw lines to the cursor for each dot
+      // Draw lines between the cursor and the dots
       dots.forEach((dot) => {
-        createLine(dot);
+        createLine(dot.offsetLeft + 4, dot.offsetTop + 4, mouseX, mouseY); // Cursor line
+        dots.forEach((otherDot) => {
+          if (otherDot !== dot) {
+            createLine(dot.offsetLeft + 4, dot.offsetTop + 4, otherDot.offsetLeft + 4, otherDot.offsetTop + 4); // Dot-to-dot lines
+          }
+        });
 
         // Remove the dot once it's off the screen
         if (dot.offsetTop > window.innerHeight) {
@@ -91,7 +100,7 @@
       });
 
       // Remove lines after a short time
-      if (lines.length > 100) {
+      if (lines.length > 200) { // Controls how many lines are kept on the screen
         const line = lines.shift();
         line.remove();
       }
@@ -102,16 +111,5 @@
     // Start the animation
     animateDots();
   </script>
-
-  <style>
-    @keyframes falling {
-      0% {
-        transform: translateY(0);
-      }
-      100% {
-        transform: translateY(100vh); /* Fall to the bottom of the screen */
-      }
-    }
-  </style>
 </body>
 </html>
