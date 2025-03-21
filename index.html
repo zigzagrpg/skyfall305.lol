@@ -1,103 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Falling Dots with Lines</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: black;
-      cursor: none; /* Hide the default cursor */
-    }
-
-    .dot {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      background-color: rgba(255, 255, 255, 0.7);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
-    .trail-line {
-      position: absolute;
-      background-color: rgba(255, 255, 255, 0.2); /* Faint lines */
-      pointer-events: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Text</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <script>
-    const dots = [];
-    let mouseX = 0;
-    let mouseY = 0;
-
-    // Function to create a falling dot
-    function createDot() {
-      const dot = document.createElement('div');
-      dot.classList.add('dot');
-      dot.style.left = `${Math.random() * window.innerWidth}px`; // Random initial X position
-      dot.style.top = `-10px`; // Start from above the screen
-      document.body.appendChild(dot);
-      dots.push(dot);
-    }
-
-    // Update the mouse position
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
-
-    // Function to draw a line between two points (x1, y1) and (x2, y2)
-    function createLine(x1, y1, x2, y2) {
-      const line = document.createElement('div');
-      line.classList.add('trail-line');
-      const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-      const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-      line.style.height = `${length}px`; // Set line height
-      line.style.transformOrigin = '0 0';
-      line.style.transform = `rotate(${angle}deg)`;
-      line.style.left = `${x1}px`;
-      line.style.top = `${y1}px`;
-      document.body.appendChild(line);
-    }
-
-    // Function to animate the dots and lines
-    function animateDots() {
-      // Create new dots at regular intervals
-      if (Math.random() < 0.05) { // Controls the number of dots falling
-        createDot();
-      }
-
-      // Draw lines between the cursor and the dots
-      dots.forEach((dot) => {
-        // Line from dot to cursor
-        createLine(dot.offsetLeft + 4, dot.offsetTop + 4, mouseX, mouseY);
-
-        // Draw lines between dots (dot-to-dot lines)
-        dots.forEach((otherDot) => {
-          if (otherDot !== dot) {
-            createLine(dot.offsetLeft + 4, dot.offsetTop + 4, otherDot.offsetLeft + 4, otherDot.offsetTop + 4);
-          }
-        });
-
-        // Move the dot down the screen
-        dot.style.top = `${dot.offsetTop + 1}px`;
-
-        // Remove the dot once it's off the screen
-        if (dot.offsetTop > window.innerHeight) {
-          dot.remove();
-          dots.splice(dots.indexOf(dot), 1);
-        }
-      });
-
-      requestAnimationFrame(animateDots);
-    }
-
-    // Start the animation
-    animateDots();
-  </script>
+    <div class="container">
+        <div class="text-line">
+            <span id="text1" class="text purple"></span>
+            <span id="text2" class="text green"></span>
+        </div>
+        <a href="https://skyfall305.mysellauth.com/" class="link-button" target="_blank">Visit Store</a>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
