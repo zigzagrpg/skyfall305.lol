@@ -23,7 +23,6 @@
 
     .trail-line {
       position: absolute;
-      width: 2px;
       background-color: rgba(255, 255, 255, 0.2); /* Faint lines */
       pointer-events: none;
     }
@@ -32,7 +31,6 @@
 <body>
   <script>
     const dots = [];
-    const lines = [];
     let mouseX = 0;
     let mouseY = 0;
 
@@ -58,12 +56,12 @@
       line.classList.add('trail-line');
       const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
       const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-      line.style.width = `${length}px`;
+      line.style.height = `${length}px`; // Adjust height instead of width
+      line.style.transformOrigin = '0 0';
       line.style.transform = `rotate(${angle}deg)`;
       line.style.left = `${x1}px`;
       line.style.top = `${y1}px`;
       document.body.appendChild(line);
-      lines.push(line);
     }
 
     // Function to animate the dots and lines
@@ -94,12 +92,6 @@
           dots.splice(dots.indexOf(dot), 1);
         }
       });
-
-      // Remove lines after a short time
-      if (lines.length > 500) { // Controls how many lines are kept on the screen
-        const line = lines.shift();
-        line.remove();
-      }
 
       requestAnimationFrame(animateDots);
     }
