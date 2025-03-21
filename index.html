@@ -3,12 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mouse Movement Effect</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Mouse Trail with Dots</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+
+    .dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      pointer-events: none;
+      transition: transform 0.1s ease;
+    }
+
+    .trail-line {
+      position: absolute;
+      width: 2px;
+      background-color: rgba(255, 255, 255, 0.5);
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
-  <div id="trail"></div>
+  <script>
+    const dots = [];
+    const lines = [];
 
-  <script src="script.js"></script>
+    // Create a dot
+    function createDot(x, y) {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      dot.style.left = `${x}px`;
+      dot.style.top = `${y}px`;
+      document.body.appendChild(dot);
+      dots.push(dot);
+    }
+
+    // Create a line between two points
+    function createLine(x1, y1, x2, y2) {
+      const line = document.createElement('div');
+      line.classList.add('trail-line');
+      const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+      const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+      line.style.width = `${length}px`;
+      line.style.transform = `rotate(${angle}deg)`;
+      line.style.left = `${x1}px`;
+      line.style.top = `${y1}px`;
+      document.body.appendChild(line);
+      lines.push(line);
+    }
+
+    // Handle mouse movement
+    document.addEventListener('mousemove', (e) => {
+      createDot(e.clientX, e.clientY);
+
+      if (dots.length > 1) {
+        createLine(dots[dots.length - 2].offsetLeft + 4, dots[dots.length - 2].offsetTop + 4, e.clientX, e.clientY);
+      }
+
+      // Remove dots and lines after a short time to keep it clean
+      setTimeout(() => {
+        if (dots.length > 100) {
+          const dot = dots.shift();
+          dot.remove();
+        }
+        if (lines.length > 100) {
+          const line = lines.shift();
+          line.remove();
+        }
+      }, 100);
+    });
+  </script>
 </body>
 </html>
