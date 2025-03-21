@@ -27,21 +27,11 @@
       background-color: rgba(255, 255, 255, 0.2); /* Faint lines */
       pointer-events: none;
     }
-
-    @keyframes falling {
-      0% {
-        transform: translateY(0);
-      }
-      100% {
-        transform: translateY(100vh); /* Fall to the bottom of the screen */
-      }
-    }
   </style>
 </head>
 <body>
   <script>
     const dots = [];
-    const lines = [];
     let mouseX = 0;
     let mouseY = 0;
 
@@ -51,7 +41,6 @@
       dot.classList.add('dot');
       dot.style.left = `${Math.random() * window.innerWidth}px`; // Random initial X position
       dot.style.top = `-10px`; // Start from above the screen
-      dot.style.animation = `falling 5s linear infinite`;
       document.body.appendChild(dot);
       dots.push(dot);
     }
@@ -73,10 +62,9 @@
       line.style.left = `${x1}px`;
       line.style.top = `${y1}px`;
       document.body.appendChild(line);
-      lines.push(line);
     }
 
-    // Create falling dots and lines to connect them to the cursor and each other
+    // Function to animate the dots and lines
     function animateDots() {
       // Create new dots at regular intervals
       if (Math.random() < 0.05) { // Controls the number of dots falling
@@ -85,14 +73,17 @@
 
       // Draw lines between the cursor and the dots
       dots.forEach((dot) => {
-        createLine(dot.offsetLeft + 4, dot.offsetTop + 4, mouseX, mouseY); // Cursor line
+        // Line from dot to cursor
+        createLine(dot.offsetLeft + 4, dot.offsetTop + 4, mouseX, mouseY);
+
+        // Draw lines between dots (dot-to-dot lines)
         dots.forEach((otherDot) => {
           if (otherDot !== dot) {
-            createLine(dot.offsetLeft + 4, dot.offsetTop + 4, otherDot.offsetLeft + 4, otherDot.offsetTop + 4); // Dot-to-dot lines
+            createLine(dot.offsetLeft + 4, dot.offsetTop + 4, otherDot.offsetLeft + 4, otherDot.offsetTop + 4);
           }
         });
 
-        // Update dot's falling position manually (no animation needed)
+        // Move the dot down the screen
         dot.style.top = `${dot.offsetTop + 1}px`;
 
         // Remove the dot once it's off the screen
@@ -101,12 +92,6 @@
           dots.splice(dots.indexOf(dot), 1);
         }
       });
-
-      // Remove lines after a short time
-      if (lines.length > 500) { // Controls how many lines are kept on the screen
-        const line = lines.shift();
-        line.remove();
-      }
 
       requestAnimationFrame(animateDots);
     }
