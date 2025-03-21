@@ -32,6 +32,7 @@
 <body>
   <script>
     const dots = [];
+    const lines = [];
     let mouseX = 0;
     let mouseY = 0;
 
@@ -51,7 +52,7 @@
       mouseY = e.clientY;
     });
 
-    // Function to draw a line from dot to dot or to cursor
+    // Function to draw a line between two points (x1, y1) and (x2, y2)
     function createLine(x1, y1, x2, y2) {
       const line = document.createElement('div');
       line.classList.add('trail-line');
@@ -62,6 +63,7 @@
       line.style.left = `${x1}px`;
       line.style.top = `${y1}px`;
       document.body.appendChild(line);
+      lines.push(line);
     }
 
     // Function to animate the dots and lines
@@ -92,6 +94,12 @@
           dots.splice(dots.indexOf(dot), 1);
         }
       });
+
+      // Remove lines after a short time
+      if (lines.length > 500) { // Controls how many lines are kept on the screen
+        const line = lines.shift();
+        line.remove();
+      }
 
       requestAnimationFrame(animateDots);
     }
