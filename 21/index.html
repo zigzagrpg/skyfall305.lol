@@ -16,13 +16,14 @@
     }
     .card {
       display: inline-block;
-      padding: 0.5em 1em;
-      margin: 0.5em;
-      background: white;
-      color: black;
+      width: 60px;
+      height: 90px;
+      background-color: white;
+      background-size: cover;
+      background-position: center;
       border: 1px solid #555;
       border-radius: 8px;
-      font-size: 1.4em;
+      margin: 0.5em;
     }
     button {
       padding: 0.5em 1em;
@@ -73,14 +74,13 @@
     let dealerCards = [];
     let gameInProgress = false;
 
-    // Give chips every second
     setInterval(() => {
       chips += 20;
       updateChips();
     }, 1000);
 
     function getRandomCard() {
-      const suits = ['♠', '♥', '♦', '♣'];
+      const suits = ['S', 'H', 'D', 'C'];
       const faces = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
       const face = faces[Math.floor(Math.random() * faces.length)];
       const suit = suits[Math.floor(Math.random() * suits.length)];
@@ -104,12 +104,26 @@
       return value;
     }
 
+    function cardImage(card) {
+      if (card === 'JH') return 'jack-of-hearts-vector-44499721.jpg';
+      return null;
+    }
+
+    function cardHTML(card) {
+      const img = cardImage(card);
+      if (img) {
+        return `<div class="card" style="background-image:url('${img}')"></div>`;
+      } else {
+        return `<div class="card">${card}</div>`;
+      }
+    }
+
     function updateDisplay() {
       const playerTotal = handValue(playerCards);
       const dealerTotal = handValue(dealerCards);
 
-      document.getElementById('player-cards').innerHTML = `<strong>You:</strong> ${playerCards.map(c => `<span class='card'>${c}</span>`).join('')} (Total: ${playerTotal})`;
-      document.getElementById('dealer-cards').innerHTML = `<strong>Dealer:</strong> ${dealerCards.map(c => `<span class='card'>${c}</span>`).join('')} (Total: ${dealerTotal})`;
+      document.getElementById('player-cards').innerHTML = `<strong>You:</strong> ${playerCards.map(cardHTML).join('')} (Total: ${playerTotal})`;
+      document.getElementById('dealer-cards').innerHTML = `<strong>Dealer:</strong> ${dealerCards.map(cardHTML).join('')} (Total: ${dealerTotal})`;
     }
 
     function updateChips() {
@@ -118,7 +132,6 @@
 
     function startGame() {
       if (gameInProgress || chips < bet) return;
-
       playCount++;
       gameInProgress = true;
       chips -= bet;
