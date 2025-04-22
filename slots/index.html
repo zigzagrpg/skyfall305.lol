@@ -25,6 +25,18 @@
       margin: 0 0.5em;
       border-radius: 10px;
       min-width: 1em;
+      height: 1.5em;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .rolling {
+      animation: spin 0.5s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotateX(0deg); }
+      100% { transform: rotateX(360deg); }
     }
     button {
       padding: 0.5em 1em;
@@ -74,28 +86,50 @@
         document.getElementById("result").innerText = "Not enough chips!";
         return;
       }
+
       chips -= costPerSpin;
-
-      const r1 = emojis[Math.floor(Math.random() * emojis.length)];
-      const r2 = emojis[Math.floor(Math.random() * emojis.length)];
-      const r3 = emojis[Math.floor(Math.random() * emojis.length)];
-
-      document.getElementById("reel1").innerText = r1;
-      document.getElementById("reel2").innerText = r2;
-      document.getElementById("reel3").innerText = r3;
-
-      let resultText = "You lose.";
-
-      if (r1 === r2 && r2 === r3) {
-        chips += 500;
-        resultText = "Jackpot! You win 500 chips!";
-      } else if (r1 === r2 || r2 === r3 || r1 === r3) {
-        chips += 200;
-        resultText = "Nice! You win 200 chips!";
-      }
-
       updateChips();
-      document.getElementById("result").innerText = resultText;
+      document.getElementById("result").innerText = "Rolling...";
+
+      const reel1 = document.getElementById("reel1");
+      const reel2 = document.getElementById("reel2");
+      const reel3 = document.getElementById("reel3");
+
+      reel1.classList.add("rolling");
+      reel2.classList.add("rolling");
+      reel3.classList.add("rolling");
+
+      let r1, r2, r3;
+
+      setTimeout(() => {
+        r1 = emojis[Math.floor(Math.random() * emojis.length)];
+        reel1.innerText = r1;
+        reel1.classList.remove("rolling");
+      }, 1000);
+
+      setTimeout(() => {
+        r2 = emojis[Math.floor(Math.random() * emojis.length)];
+        reel2.innerText = r2;
+        reel2.classList.remove("rolling");
+      }, 1200);
+
+      setTimeout(() => {
+        r3 = emojis[Math.floor(Math.random() * emojis.length)];
+        reel3.innerText = r3;
+        reel3.classList.remove("rolling");
+
+        let resultText = "You lose.";
+        if (r1 === r2 && r2 === r3) {
+          chips += 500;
+          resultText = "Jackpot! You win 500 chips!";
+        } else if (r1 === r2 || r2 === r3 || r1 === r3) {
+          chips += 200;
+          resultText = "Nice! You win 200 chips!";
+        }
+
+        updateChips();
+        document.getElementById("result").innerText = resultText;
+      }, 1400);
     }
 
     setInterval(() => {
