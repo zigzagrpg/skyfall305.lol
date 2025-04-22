@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slot Machine</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 2em;
+    }
+    #reels {
+      display: flex;
+      justify-content: center;
+      font-size: 3em;
+      margin: 1em 0;
+    }
+    .reel {
+      background: #222;
+      border: 3px solid #555;
+      padding: 0.5em 1em;
+      margin: 0 0.5em;
+      border-radius: 10px;
+      min-width: 1em;
+    }
+    button {
+      padding: 0.5em 1em;
+      font-size: 1.2em;
+      margin-top: 1em;
+      background-color: #28a745;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #chips-display {
+      font-size: 1.2em;
+      margin-bottom: 1em;
+    }
+    #result {
+      font-size: 1.5em;
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Slot Machine</h1>
+  <div id="chips-display">Chips: 2000</div>
+  <div id="reels">
+    <div class="reel" id="reel1">🍒</div>
+    <div class="reel" id="reel2">🍒</div>
+    <div class="reel" id="reel3">🍒</div>
+  </div>
+  <button onclick="spin()">Spin (100 Chips)</button>
+  <div id="result"></div>
+
+  <script>
+    let chips = 2000;
+    const costPerSpin = 100;
+    const emojis = ["🍒", "🍋", "🔔", "🍉", "⭐", "7️⃣"];
+
+    function updateChips() {
+      document.getElementById("chips-display").innerText = `Chips: ${chips}`;
+    }
+
+    function spin() {
+      if (chips < costPerSpin) {
+        document.getElementById("result").innerText = "Not enough chips!";
+        return;
+      }
+      chips -= costPerSpin;
+
+      const r1 = emojis[Math.floor(Math.random() * emojis.length)];
+      const r2 = emojis[Math.floor(Math.random() * emojis.length)];
+      const r3 = emojis[Math.floor(Math.random() * emojis.length)];
+
+      document.getElementById("reel1").innerText = r1;
+      document.getElementById("reel2").innerText = r2;
+      document.getElementById("reel3").innerText = r3;
+
+      let resultText = "You lose.";
+
+      if (r1 === r2 && r2 === r3) {
+        chips += 500;
+        resultText = "Jackpot! You win 500 chips!";
+      } else if (r1 === r2 || r2 === r3 || r1 === r3) {
+        chips += 200;
+        resultText = "Nice! You win 200 chips!";
+      }
+
+      updateChips();
+      document.getElementById("result").innerText = resultText;
+    }
+
+    setInterval(() => {
+      chips += 20;
+      updateChips();
+    }, 2000);
+  </script>
+</body>
+</html>
