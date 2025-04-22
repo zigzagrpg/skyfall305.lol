@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fake Blackjack</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2em;
+    }
+    .card {
+      display: inline-block;
+      padding: 1em;
+      margin: 0.5em;
+      background: #1f1f1f;
+      border: 1px solid #555;
+      border-radius: 8px;
+      font-size: 1.2em;
+    }
+    button {
+      padding: 0.5em 1em;
+      margin-top: 1em;
+      font-size: 1em;
+      background-color: #28a745;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .result {
+      font-size: 1.5em;
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fake Blackjack</h1>
+  <div id="game">
+    <div id="player-cards"></div>
+    <div id="dealer-cards"></div>
+    <button onclick="playGame()">Play Hand</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    let playCount = 0;
+
+    function getRandomCard() {
+      return Math.floor(Math.random() * 10) + 2; // 2–11 range
+    }
+
+    function playGame() {
+      playCount++;
+      const playerCards = [getRandomCard(), getRandomCard()];
+      const dealerCards = [getRandomCard(), getRandomCard()];
+
+      const playerTotal = playerCards.reduce((a, b) => a + b);
+      const dealerTotal = dealerCards.reduce((a, b) => a + b);
+
+      document.getElementById('player-cards').innerHTML = `<strong>You:</strong> ${playerCards.join(', ')} (Total: ${playerTotal})`;
+      document.getElementById('dealer-cards').innerHTML = `<strong>Dealer:</strong> ${dealerCards.join(', ')} (Total: ${dealerTotal})`;
+
+      let result;
+
+      // Every 10th round, player wins (cheat mode)
+      if (playCount % 10 === 0) {
+        result = "You win! (Lucky streak!)";
+      } else if (playerTotal > 21) {
+        result = "You bust! Dealer wins.";
+      } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
+        result = "You win!";
+      } else if (playerTotal === dealerTotal) {
+        result = "Push (tie).";
+      } else {
+        result = "Dealer wins.";
+      }
+
+      document.getElementById('result').innerText = result;
+    }
+  </script>
+</body>
+</html>
