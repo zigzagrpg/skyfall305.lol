@@ -25,7 +25,7 @@
     }
     button {
       padding: 0.5em 1em;
-      margin-top: 1em;
+      margin: 0.5em;
       font-size: 1em;
       background-color: #28a745;
       border: none;
@@ -40,6 +40,9 @@
       font-size: 1.5em;
       margin-top: 1em;
     }
+    #controls {
+      margin-top: 1em;
+    }
   </style>
 </head>
 <body>
@@ -47,44 +50,92 @@
   <div id="game">
     <div id="player-cards"></div>
     <div id="dealer-cards"></div>
-    <button onclick="playGame()">Play Hand</button>
+    <div id="controls">
+      <button onclick="startGame()">New Game</button>
+      <button onclick="hit()">Hit</button>
+      <button onclick="stand()">Stand</button>
+      <button onclick="doubleDown()">Double</button>
+    </div>
     <div class="result" id="result"></div>
   </div>
 
   <script>
     let playCount = 0;
+    let playerCards = [];
+    let dealerCards = [];
+    let gameInProgress = false;
 
     function getRandomCard() {
       return Math.floor(Math.random() * 10) + 2; // 2–11 range
     }
 
-    function playGame() {
-      playCount++;
-      const playerCards = [getRandomCard(), getRandomCard()];
-      const dealerCards = [getRandomCard(), getRandomCard()];
-
-      const playerTotal = playerCards.reduce((a, b) => a + b);
-      const dealerTotal = dealerCards.reduce((a, b) => a + b);
+    function updateDisplay() {
+      const playerTotal = playerCards.reduce((a, b) => a + b, 0);
+      const dealerTotal = dealerCards.reduce((a, b) => a + b, 0);
 
       document.getElementById('player-cards').innerHTML = `<strong>You:</strong> ${playerCards.join(', ')} (Total: ${playerTotal})`;
       document.getElementById('dealer-cards').innerHTML = `<strong>Dealer:</strong> ${dealerCards.join(', ')} (Total: ${dealerTotal})`;
+    }
 
-      let result;
+    function startGame() {
+      playCount++;
+      gameInProgress = true;
+      playerCards = [getRandomCard(), getRandomCard()];
+      dealerCards = [getRandomCard(), getRandomCard()];
+      document.getElementById('result').innerText = '';
+      updateDisplay();
+    }
 
-      // Every 10th round, player wins (cheat mode)
-      if (playCount % 10 === 0) {
-        result = "You win! (Lucky streak!)";
-      } else if (playerTotal > 21) {
-        result = "You bust! Dealer wins.";
-      } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
-        result = "You win!";
-      } else if (playerTotal === dealerTotal) {
-        result = "Push (tie).";
-      } else {
-        result = "Dealer wins.";
+    function hit() {
+      if (!gameInProgress) return;
+      playerCards.push(getRandomCard());
+      updateDisplay();
+      const total = playerCards.reduce((a, b) => a + b, 0);
+      if (total > 21) {
+        endGame("You bust! Dealer wins.");
+      }
+    }
+
+    function stand() {
+      if (!gameInProgress) return;
+      while (dealerCards.reduce((a, b) => a + b, 0) < 17) {
+        dealerCards.push(getRandomCard());
+      }
+      determineOutcome();
+    }
+
+    function doubleDown() {
+      if (!gameInProgress) return;
+      playerCards.push(getRandomCard());
+      updateDisplay();
+      stand();
+    }
+
+    function determineOutcome() {
+      const playerTotal = playerCards.reduce((a, b) => a + b, 0);
+      const dealerTotal = dealerCards.reduce((a, b) => a + b, 0);
+
+      // Cheat condition: 2 out of 10 chance to auto-win
+      if (playCount % 5 === 0) {
+        endGame("You win! (Lucky boost!)");
+        return;
       }
 
-      document.getElementById('result').innerText = result;
+      if (playerTotal > 21) {
+        endGame("You bust! Dealer wins.");
+      } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
+        endGame("You win!");
+      } else if (playerTotal === dealerTotal) {
+        endGame("Push (tie).");
+      } else {
+        endGame("Dealer wins.");
+      }
+    }
+
+    function endGame(message) {
+      document.getElementById('result').innerText = message;
+      updateDisplay();
+      gameInProgress = false;
     }
   </script>
 </body>
