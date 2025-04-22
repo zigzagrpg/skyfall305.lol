@@ -43,15 +43,20 @@
     #controls {
       margin-top: 1em;
     }
+    #chips-display {
+      margin-top: 1em;
+      font-size: 1.2em;
+    }
   </style>
 </head>
 <body>
   <h1>Fake Blackjack</h1>
+  <div id="chips-display">Chips: 1000</div>
   <div id="game">
     <div id="player-cards"></div>
     <div id="dealer-cards"></div>
     <div id="controls">
-      <button onclick="startGame()">New Game</button>
+      <button onclick="startGame()">New Game (10 Chips)</button>
       <button onclick="hit()">Hit</button>
       <button onclick="stand()">Stand</button>
       <button onclick="doubleDown()">Double</button>
@@ -60,26 +65,61 @@
   </div>
 
   <script>
+    let chips = 1000;
+    let bet = 10;
     let playCount = 0;
     let playerCards = [];
     let dealerCards = [];
     let gameInProgress = false;
 
+    // Give chips every second
+    setInterval(() => {
+      chips += 20;
+      updateChips();
+    }, 1000);
+
     function getRandomCard() {
-      return Math.floor(Math.random() * 10) + 2; // 2–11 range
+      const faces = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+      const card = faces[Math.floor(Math.random() * faces.length)];
+      return card;
+    }
+
+    function cardValue(card) {
+      if (["J", "Q", "K"].includes(card)) return 10;
+      if (card === "A") return 11;
+      return parseInt(card);
+    }
+
+    function handValue(hand) {
+      let value = hand.reduce((sum, card) => sum + cardValue(card), 0);
+      let aces = hand.filter(c => c === "A").length;
+      while (value > 21 && aces > 0) {
+        value -= 10;
+        aces--;
+      }
+      return value;
     }
 
     function updateDisplay() {
-      const playerTotal = playerCards.reduce((a, b) => a + b, 0);
-      const dealerTotal = dealerCards.reduce((a, b) => a + b, 0);
+      const playerTotal = handValue(playerCards);
+      const dealerTotal = handValue(dealerCards);
 
       document.getElementById('player-cards').innerHTML = `<strong>You:</strong> ${playerCards.join(', ')} (Total: ${playerTotal})`;
       document.getElementById('dealer-cards').innerHTML = `<strong>Dealer:</strong> ${dealerCards.join(', ')} (Total: ${dealerTotal})`;
     }
 
+    function updateChips() {
+      document.getElementById('chips-display').innerText = `Chips: ${chips}`;
+    }
+
     function startGame() {
+      if (gameInProgress || chips < bet) return;
+
       playCount++;
       gameInProgress = true;
+      chips -= bet;
+      updateChips();
+
       playerCards = [getRandomCard(), getRandomCard()];
       dealerCards = [getRandomCard(), getRandomCard()];
       document.getElementById('result').innerText = '';
@@ -90,7 +130,7 @@
       if (!gameInProgress) return;
       playerCards.push(getRandomCard());
       updateDisplay();
-      const total = playerCards.reduce((a, b) => a + b, 0);
+      const total = handValue(playerCards);
       if (total > 21) {
         endGame("You bust! Dealer wins.");
       }
@@ -98,25 +138,29 @@
 
     function stand() {
       if (!gameInProgress) return;
-      while (dealerCards.reduce((a, b) => a + b, 0) < 17) {
+      while (handValue(dealerCards) < 17) {
         dealerCards.push(getRandomCard());
       }
       determineOutcome();
     }
 
     function doubleDown() {
-      if (!gameInProgress) return;
+      if (!gameInProgress || chips < bet) return;
+      chips -= bet;
+      updateChips();
       playerCards.push(getRandomCard());
       updateDisplay();
       stand();
     }
 
     function determineOutcome() {
-      const playerTotal = playerCards.reduce((a, b) => a + b, 0);
-      const dealerTotal = dealerCards.reduce((a, b) => a + b, 0);
+      const playerTotal = handValue(playerCards);
+      const dealerTotal = handValue(dealerCards);
 
-      // Cheat condition: 2 out of 10 chance to auto-win
-      if (playCount % 5 === 0) {
+      // Random chance for auto-win: 20% chance
+      const luckyWin = Math.random() < 0.2;
+      if (luckyWin) {
+        chips += bet * 2;
         endGame("You win! (Lucky boost!)");
         return;
       }
@@ -124,8 +168,10 @@
       if (playerTotal > 21) {
         endGame("You bust! Dealer wins.");
       } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
+        chips += bet * 2;
         endGame("You win!");
       } else if (playerTotal === dealerTotal) {
+        chips += bet;
         endGame("Push (tie).");
       } else {
         endGame("Dealer wins.");
@@ -135,6 +181,7 @@
     function endGame(message) {
       document.getElementById('result').innerText = message;
       updateDisplay();
+      updateChips();
       gameInProgress = false;
     }
   </script>
