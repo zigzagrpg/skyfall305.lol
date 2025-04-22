@@ -15,28 +15,30 @@
     #reels {
       display: flex;
       justify-content: center;
-      font-size: 3em;
-      margin: 1em 0;
+      gap: 1em;
+      margin: 2em 0;
+    }
+    .reel-container {
+      width: 80px;
+      height: 120px;
+      overflow: hidden;
+      background: #333;
+      border: 4px solid #555;
+      border-radius: 10px;
+      position: relative;
     }
     .reel {
-      background: #222;
-      border: 3px solid #555;
-      padding: 0.5em 1em;
-      margin: 0 0.5em;
-      border-radius: 10px;
-      min-width: 1em;
-      height: 1.5em;
-      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      width: 100%;
+    }
+    .symbol {
+      font-size: 3em;
+      height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-    .rolling {
-      animation: spin 0.5s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotateX(0deg); }
-      100% { transform: rotateX(360deg); }
     }
     button {
       padding: 0.5em 1em;
@@ -65,9 +67,9 @@
   <h1>Slot Machine</h1>
   <div id="chips-display">Chips: 2000</div>
   <div id="reels">
-    <div class="reel" id="reel1">🍒</div>
-    <div class="reel" id="reel2">🍒</div>
-    <div class="reel" id="reel3">🍒</div>
+    <div class="reel-container"><div class="reel" id="reel1"></div></div>
+    <div class="reel-container"><div class="reel" id="reel2"></div></div>
+    <div class="reel-container"><div class="reel" id="reel3"></div></div>
   </div>
   <button onclick="spin()">Spin (100 Chips)</button>
   <div id="result"></div>
@@ -91,32 +93,47 @@
       updateChips();
       document.getElementById("result").innerText = "Rolling...";
 
-      const reel1 = document.getElementById("reel1");
-      const reel2 = document.getElementById("reel2");
-      const reel3 = document.getElementById("reel3");
+      const r1 = document.getElementById("reel1");
+      const r2 = document.getElementById("reel2");
+      const r3 = document.getElementById("reel3");
 
-      reel1.classList.add("rolling");
-      reel2.classList.add("rolling");
-      reel3.classList.add("rolling");
+      spinReel(r1, 0);
+      spinReel(r2, 300);
+      spinReel(r3, 600);
+    }
 
-      let r1, r2, r3;
-
-      setTimeout(() => {
-        r1 = emojis[Math.floor(Math.random() * emojis.length)];
-        reel1.innerText = r1;
-        reel1.classList.remove("rolling");
-      }, 1000);
-
-      setTimeout(() => {
-        r2 = emojis[Math.floor(Math.random() * emojis.length)];
-        reel2.innerText = r2;
-        reel2.classList.remove("rolling");
-      }, 1200);
+    function spinReel(reel, delay) {
+      const totalSymbols = 20;
+      let symbols = [];
+      for (let i = 0; i < totalSymbols; i++) {
+        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        symbols.push(`<div class="symbol">${emoji}</div>`);
+      }
+      reel.innerHTML = symbols.join("");
+      reel.style.transition = 'none';
+      reel.style.top = '0px';
 
       setTimeout(() => {
-        r3 = emojis[Math.floor(Math.random() * emojis.length)];
-        reel3.innerText = r3;
-        reel3.classList.remove("rolling");
+        reel.style.transition = 'top 1s ease-out';
+        reel.style.top = `-${(totalSymbols - 1) * 120}px`;
+      }, 50);
+
+      setTimeout(() => {
+        const landed = reel.children[totalSymbols - 1].innerText;
+        finalizeSpin(reel.id, landed);
+      }, delay + 1000);
+    }
+
+    const results = {};
+
+    function finalizeSpin(id, symbol) {
+      results[id] = symbol;
+
+      if (results['reel1'] && results['reel2'] && results['reel3']) {
+        const r1 = results['reel1'];
+        const r2 = results['reel2'];
+        const r3 = results['reel3'];
+        results['reel1'] = results['reel2'] = results['reel3'] = null;
 
         let resultText = "You lose.";
         if (r1 === r2 && r2 === r3) {
@@ -129,7 +146,7 @@
 
         updateChips();
         document.getElementById("result").innerText = resultText;
-      }, 1400);
+      }
     }
 
     setInterval(() => {
