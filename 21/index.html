@@ -105,17 +105,17 @@
     }
 
     function cardImage(card) {
-      if (card === 'JH') return 'jack-of-hearts-vector-44499721.jpg';
-      return null;
+      const face = card.slice(0, -1);
+      const suit = card.slice(-1);
+      const suitMap = { S: 'S', H: 'H', D: 'D', C: 'C' };
+      const faceMap = { '10': '0', 'J': 'J', 'Q': 'Q', 'K': 'K', 'A': 'A' };
+      const formattedFace = faceMap[face] || face;
+      return `https://deckofcardsapi.com/static/img/${formattedFace}${suitMap[suit]}.png`;
     }
 
     function cardHTML(card) {
       const img = cardImage(card);
-      if (img) {
-        return `<div class="card" style="background-image:url('${img}')"></div>`;
-      } else {
-        return `<div class="card">${card}</div>`;
-      }
+      return `<div class="card" style="background-image:url('${img}')"></div>`;
     }
 
     function updateDisplay() {
