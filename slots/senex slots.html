@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slot Machine</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #e74c3c;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 36px;
+    }
+    .slot-machine {
+      margin: 50px auto;
+      width: 300px;
+      background-color: #34495e;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    .reels {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
+    .reel {
+      width: 80px;
+      height: 80px;
+      background-color: #ecf0f1;
+      border: 2px solid #bdc3c7;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 48px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    button {
+      background-color: #e74c3c;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    button:hover {
+      background-color: #c0392b;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Slot Machine</h1>
+  </header>
+
+  <div class="slot-machine">
+    <div class="reels">
+      <div class="reel" id="reel1">?</div>
+      <div class="reel" id="reel2">?</div>
+      <div class="reel" id="reel3">?</div>
+    </div>
+    <button onclick="spin()">Spin</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    // Symbols for the slot machine
+    const symbols = ["🍒", "🍋", "🍊", "🍇", "🔔", "⭐", "💎"];
+
+    // Function to spin the reels
+    function spin() {
+      const reel1 = document.getElementById("reel1");
+      const reel2 = document.getElementById("reel2");
+      const reel3 = document.getElementById("reel3");
+      const resultDiv = document.getElementById("result");
+
+      // Disable the button during spin
+      const spinButton = document.querySelector("button");
+      spinButton.disabled = true;
+
+      // Simulate spinning animation
+      let spins = 10; // Number of spins
+      const interval = 100; // Time between updates (in ms)
+
+      const intervalId = setInterval(() => {
+        reel1.textContent = getRandomSymbol();
+        reel2.textContent = getRandomSymbol();
+        reel3.textContent = getRandomSymbol();
+        spins--;
+
+        if (spins === 0) {
+          clearInterval(intervalId);
+
+          // Final results
+          const symbol1 = reel1.textContent;
+          const symbol2 = reel2.textContent;
+          const symbol3 = reel3.textContent;
+
+          // Check for a win
+          if (symbol1 === symbol2 && symbol2 === symbol3) {
+            resultDiv.textContent = "🎉 JACKPOT! You Win! 🎉";
+          } else if (symbol1 === symbol2 || symbol2 === symbol3 || symbol1 === symbol3) {
+            resultDiv.textContent = "💰 You Win a Small Prize! 💰";
+          } else {
+            resultDiv.textContent = "❌ Better Luck Next Time! ❌";
+          }
+
+          // Re-enable the button
+          spinButton.disabled = false;
+        }
+      }, interval);
+    }
+
+    // Helper function to get a random symbol
+    function getRandomSymbol() {
+      const randomIndex = Math.floor(Math.random() * symbols.length);
+      return symbols[randomIndex];
+    }
+  </script>
+</body>
+</html>
