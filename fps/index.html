@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini FPS with Bots</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+      background: #111;
+      color: white;
+    }
+
+    #ui {
+      position: absolute;
+      z-index: 10;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    #start {
+      margin-top: 10px;
+      padding: 5px 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #info {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      font-size: 14px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <label>Team Blue Bots: <input type="number" id="blueCount" value="3" min="0" max="20" /></label><br />
+    <label>Team Red Bots: <input type="number" id="redCount" value="3" min="0" max="20" /></label><br />
+    <button id="start">Start Game</button>
+  </div>
+  <div id="info">WASD to move, Click to shoot</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/PointerLockControls.js"></script>
+  <script>
+    let scene, camera, renderer, controls;
+    let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+    let bots = [];
+    let teamBlue = [], teamRed = [];
+
+    const objects = [];
+    const speed = 5;
+
+    document.getElementById('start').onclick = () => {
+      document.getElementById('ui').style.display = 'none';
+      init();
+      animate();
+    };
+
+    function init() {
+      const blueCount = parseInt(document.getElementById('blueCount').value);
+      const redCount = parseInt(document.getElementById('redCount').value);
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x202020);
+
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 1000);
+      controls = new THREE.PointerLockControls(camera, document.body);
+      document.body.addEventListener('click', () => controls.lock());
+
+      scene.add(controls.getObject());
+
+      const light = new THREE.HemisphereLight(0xffffff, 0x444444);
+      light.position.set(0, 20, 0);
+      scene.add(light);
+
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(200, 200),
+        new THREE.MeshStandardMaterial({ color: 0x555555 })
+      );
+      floor.rotation.x = -Math.PI / 2;
+      scene.add(floor);
+
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      document.addEventListener('keydown', onKeyDown);
+      document.addEventListener('keyup', onKeyUp);
+      document.addEventListener('click', shoot);
+
+      createBots(blueCount, 0x00aaff, teamBlue, -30);
+      createBots(redCount, 0xff4444, teamRed, 30);
+    }
+
+    function createBots(count, color, team, zStart) {
+      for (let i = 0; i < count; i++) {
+        const bot = new THREE.Mesh(
+          new THREE.BoxGeometry(1, 2, 1),
+          new THREE.MeshStandardMaterial({ color })
+        );
+        bot.position.set(Math.random() * 40 - 20, 1, zStart + Math.random() * 10);
+        bot.userData = { health: 3, team: color };
+        scene.add(bot);
+        bots.push(bot);
+        team.push(bot);
+      }
+    }
+
+    function shoot() {
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+      const intersects = raycaster.intersectObjects(bots);
+      if (intersects.length > 0) {
+        const target = intersects[0].object;
+        target.userData.health -= 1;
+        target.material.color.set(0xff0000);
+        if (target.userData.health <= 0) {
+          scene.remove(target);
+          bots = bots.filter(b => b !== target);
+        }
+      }
+    }
+
+    function onKeyDown(event) {
+      switch (event.code) {
+        case 'KeyW': moveForward = true; break;
+        case 'KeyS': moveBackward = true; break;
+        case 'KeyA': moveLeft = true; break;
+        case 'KeyD': moveRight = true; break;
+      }
+    }
+
+    function onKeyUp(event) {
+      switch (event.code) {
+        case 'KeyW': moveForward = false; break;
+        case 'KeyS': moveBackward = false; break;
+        case 'KeyA': moveLeft = false; break;
+        case 'KeyD': moveRight = false; break;
+      }
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = 0.05;
+      let velocity = new THREE.Vector3();
+
+      if (moveForward) velocity.z -= speed * delta;
+      if (moveBackward) velocity.z += speed * delta;
+      if (moveLeft) velocity.x -= speed * delta;
+      if (moveRight) velocity.x += speed * delta;
+
+      controls.moveRight(velocity.x);
+      controls.moveForward(velocity.z);
+
+      renderer.render(scene, camera);
+    }
+  </script>
+</body>
+</html>
