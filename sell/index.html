@@ -150,12 +150,12 @@
       <div class="item-title">las tralaleritas</div>
       <div class="item-price">£1.29</div>
     </div>
-    <div class="item-card" onclick="openOverlay('https://skyfall305.lol/sell/samyni.png', 'sammyni spiderini', 'full access account with sammyni spyderini', '£1.00', '#')">
+    <div class="item-card" onclick="openOverlay('https://skyfall305.lol/sell/samyni.png', 'sammyni spiderini', 'full access account with sammyni spyderini', '£1.00', 'https://www.paypal.me/skyfall305')">
       <img src="https://skyfall305.lol/sell/samyni.png" alt="Item 2">
       <div class="item-title">sammyni spiderini</div>
       <div class="item-price">£1.00</div>
     </div>
-    <div class="item-card" onclick="openOverlay('https://skyfall305.lol/sell/lasvaq.png', 'las vaquitas', 'full access account with las vaquitas saturnitas', '£2.00', '#')">
+    <div class="item-card" onclick="openOverlay('https://skyfall305.lol/sell/lasvaq.png', 'las vaquitas', 'full access account with las vaquitas saturnitas', '£2.00', 'https://www.paypal.me/skyfall305')">
       <img src="https://skyfall305.lol/sell/lasvaq.png" alt="Item 3">
       <div class="item-title">la vaquitas saturnitas</div>
       <div class="item-price">£2.00</div>
@@ -169,7 +169,7 @@
       <h2 id="overlayTitle"></h2>
       <p id="overlayDesc"></p>
       <p id="overlayPrice"></p>
-      <a id="overlayBuy" href="https://paypal.me/skyfall305" class="buy-button" target="_blank" onclick="setTimeout(showInstructions, 500)">Buy Now</a>
+      <a id="overlayBuy" href="#" class="buy-button" target="_blank" onclick="buyNow(event)">Buy Now</a>
       <div class="instructions" id="instructions">
         ✅ After completing your purchase, please <a href="https://discord.gg/KSsmUWrwUv" target="_blank" style="color:#00ff99;">open a ticket in our Discord</a> and include your payment email or receipt so we can deliver your order.
       </div>
@@ -177,6 +177,17 @@
   </div>
 
   <script>
+    function buyNow(event) {
+      event.preventDefault();
+      const buyLink = document.getElementById('overlayBuy').href;
+      window.open(buyLink, '_blank');
+      setTimeout(showInstructions, 500);
+    }
+
+    function showInstructions() {
+      document.getElementById('instructions').style.display = 'block';
+    }
+
     function openOverlay(img, title, desc, price, buyLink) {
       document.getElementById('overlayImg').src = img;
       document.getElementById('overlayTitle').innerText = title;
@@ -189,10 +200,6 @@
 
     function closeOverlay() {
       document.getElementById('overlay').classList.remove('active');
-    }
-
-    function showInstructions() {
-      document.getElementById('instructions').style.display = 'block';
     }
   </script>
 </body>
