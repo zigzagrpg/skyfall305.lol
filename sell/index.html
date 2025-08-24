@@ -2,78 +2,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Skyfall305 Store</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
-        }
-        h1 {
-            margin-bottom: 30px;
-            color: #ffcc00;
-        }
-        .item-card {
-            background-color: #1e1e1e;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .item-card img {
-            width: 100%;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        .item-title {
-            font-size: 1.4em;
-            margin-bottom: 10px;
-        }
-        .item-description {
-            font-size: 0.95em;
-            color: #cccccc;
-            margin-bottom: 15px;
-        }
-        .item-price {
-            font-size: 1.2em;
-            color: #00ff99;
-            margin-bottom: 15px;
-        }
-        .buy-button {
-            background-color: #ffcc00;
-            border: none;
-            color: #000;
-            padding: 12px 24px;
-            font-size: 1em;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .buy-button:hover {
-            background-color: #e6b800;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skyfall305 Store</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 30px 0;
+      color: #ffcc00;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .item-card {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      width: 250px;
+      transition: transform 0.6s ease;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .item-card:hover {
+      transform: scale(1.03);
+    }
+
+    .item-card img {
+      width: 100%;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+
+    .item-title {
+      font-size: 1.2em;
+      margin: 10px;
+    }
+
+    .item-price {
+      color: #00ff99;
+      margin: 0 10px 10px;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 1.2s ease;
+    }
+
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .overlay-content {
+      position: relative;
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid white;
+      box-shadow: 0 0 30px white;
+      animation: glow 4s infinite alternate;
+      max-width: 90%;
+      max-height: 90%;
+      overflow: auto;
+    }
+
+    .overlay-content img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px white;
+      }
+      to {
+        box-shadow: 0 0 40px white, 0 0 80px white;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Skyfall305 Store</h1>
-    <div class="item-card">
-        <img src="https://skyfall305.lol/sell/losImgur.png" alt="Item Image">
-        <div class="item-title">las tralaleritas</div>
-        <div class="item-description">full access account with las tralaleritas</div>
-        <div class="item-price">£1.29 </div>
-        <a href="https://www.paypal.me/skyfall305" class="buy-button" target="_blank">Buy Now</a>
+  <h1>Skyfall305 Store</h1>
+  <div class="grid">
+    <div class="item-card" onclick="openOverlay('https://skyfall305.lol/sell/losImgur.png', 'las tralaleritas', 'Full access account with las tralaleritas', '£1.29', 'https://www.paypal.me/skyfall305')">
+      <img src="https://skyfall305.lol/sell/losImgur.png" alt="Item 1">
+      <div class="item-title">las tralaleritas</div>
+      <div class="item-price">£1.29</div>
     </div>
+    <div class="item-card" onclick="openOverlay('https://i.imgur.com/IuhLJIT.jpg', 'Test Item 2', 'This is a test item.', '$9.99', '#')">
+      <img src="https://i.imgur.com/IuhLJIT.jpg" alt="Item 2">
+      <div class="item-title">Test Item 2</div>
+      <div class="item-price">$9.99</div>
+    </div>
+    <div class="item-card" onclick="openOverlay('https://i.imgur.com/IuhLJIT.jpg', 'Test Item 3', 'Another test item.', '$19.99', '#')">
+      <img src="https://i.imgur.com/IuhLJIT.jpg" alt="Item 3">
+      <div class="item-title">Test Item 3</div>
+      <div class="item-price">$19.99</div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="overlay-content" id="overlayContent">
+      <span class="close-btn" onclick="closeOverlay()">&times;</span>
+      <img id="overlayImg" src="" alt="Zoomed Item">
+      <h2 id="overlayTitle"></h2>
+      <p id="overlayDesc"></p>
+      <p id="overlayPrice"></p>
+      <a id="overlayBuy" href="#" class="buy-button" target="_blank">Buy Now</a>
+    </div>
+  </div>
+
+  <script>
+    function openOverlay(img, title, desc, price, buyLink) {
+      document.getElementById('overlayImg').src = img;
+      document.getElementById('overlayTitle').innerText = title;
+      document.getElementById('overlayDesc').innerText = desc;
+      document.getElementById('overlayPrice').innerText = price;
+      document.getElementById('overlayBuy').href = buyLink;
+      document.getElementById('overlay').classList.add('active');
+    }
+
+    function closeOverlay() {
+      document.getElementById('overlay').classList.remove('active');
+    }
+  </script>
 </body>
 </html>
